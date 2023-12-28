@@ -1,16 +1,17 @@
-import copy
 from characters.character import *
+from characters.skill import Skill
 from status.debuffs import Weakness
-from status.inheritances import CenturionInheritance
 from dmg_type import DamageType
+from utils import first_or_default
 
 class Centurion(Character):
     def __init__(self) -> None:
         super().__init__("Centurion_330101");
+        self.max_life = 9152
         self.life = 9152
         self.attack = 1720
-        self.original_properties = Properties()
-        self.original_properties.reallity_def = 761
+        self.moxie = 0
+        self.original_properties.reality_def = 761
         self.original_properties.mental_def = 701
         self.original_properties.critical_rate = 0.675
         self.original_properties.critical_resist = 0.1
@@ -19,30 +20,32 @@ class Centurion(Character):
         self.original_properties.dmg_bonus = 0.08
         self.original_properties.dmg_taken_reduction = 0.05
         self.original_properties.incantation_might = 0.18
-        self.moxie = 0
         self.skill1 = OutdoorSuperstar(self)
         self.skill2 = VictoriousGeneral(self)
         self.ultimate = RealityShowPremier(self)
-        self.status = [CenturionInheritance(self)]
         self.reset_current_properties()
     
-    def reset_current_properties(self):
-        self.properties = copy.copy(self.original_properties)
+    def set_attacker_battle_properties(self, target): # Inheritance 1
+        super().set_attacker_battle_properties(target)
+        self.properties.dmg_bonus += 0.06 * self.moxie
     
+    def on_moxie_change(self, before, after): # Inheritance 3
+        if after < before:
+            heal = self.max_life * 0.2
+            self.life = min(self.life + heal, self.max_life)
+
 class OutdoorSuperstar(Skill):
     def __init__(self, caster) -> None:
-        self.type = DamageType.PHYSICAL
+        super().__init__(caster, "OutdoorSuperstar")
         self.target_number = 2
-        self.caster = caster
-        self.name = "OutdoorSuperstar"
     
-    def pre_damage(self, level, battlefield) -> None:
+    def pre_damage(self, level, targets:list[Character]) -> None:
         if level == 2:
-            self.caster.increase_moxie(1)
+            self.caster.adjust_moxie(1)
         elif level == 3:
-            self.caster.increase_moxie(2)
+            self.caster.adjust_moxie(2)
 
-    def get_damage_multiplier(self, level, battlefield) -> float:
+    def get_skill_multiplier(self, level, target:Character) -> float:
         if level == 1:
             return 1.5
         if level == 2:
@@ -50,20 +53,18 @@ class OutdoorSuperstar(Skill):
         elif level == 3:
             return 2.25
     
-    def post_damage(self, level, battlefield) -> None:
+    def post_damage(self, level, targets:list[Character]) -> None:
         pass
 
 class VictoriousGeneral(Skill):
     def __init__(self, caster) -> None:
-        self.type = DamageType.PHYSICAL
+        super().__init__(caster, "VictoriousGeneral")
         self.target_number = 1
-        self.caster = caster
-        self.name = "VictoriousGeneral"
     
-    def pre_damage(self, level, battlefield) -> None:
+    def pre_damage(self, level, targets:list[Character]) -> None:
         pass
 
-    def get_damage_multiplier(self, level, battlefield) -> float:
+    def get_skill_multiplier(self, level, target:Character) -> float:
         if level == 1:
             return 1.8 + self.caster.moxie * 0.14
         if level == 2:
@@ -71,22 +72,25 @@ class VictoriousGeneral(Skill):
         elif level == 3:
             return 4.5 + self.caster.moxie * 0.35
     
-    def post_damage(self, level, battlefield) -> None:
+    def post_damage(self, level, targets:list[Character]) -> None:
         pass
 
 class RealityShowPremier(Skill):
     def __init__(self, caster) -> None:
-        self.type = DamageType.PHYSICAL
+        super().__init__(caster, "RealityShowPremier")
         self.target_number = 10
-        self.caster = caster
-        self.name = "RealityShowPremier"
+        self.is_ultimate = True
     
-    def pre_damage(self, level, battlefield) -> None:
+    def pre_damage(self, level, targets:list[Character]) -> None:
         pass
 
-    def get_damage_multiplier(self, level, battlefield) -> float:
+    def get_skill_multiplier(self, level, target:Character) -> float:
         return 3
     
-    def post_damage(self, level, battlefield) -> None:
-        for character in battlefield.Black:
-            character.Status.append(Weakness(1))
+    def post_damage(self, level, targets:list[Character]) -> None:
+        for target in targets:
+            weakness = first_or_default(target.status, lambda x: isinstance(x, Weakness))
+            if weakness is not None:
+                weakness.times_count += 1
+            else:
+                target.status.append(Weakness(self, target, 1))

@@ -7,9 +7,10 @@ class Enemy1(Character):
     def __init__(self) -> None:
         super().__init__("Enemy1");
         self.attack = 1720
-        self.life = 9152
+        self.max_life = 999999
+        self.life = 999999
         self.original_properties = Properties()
-        self.original_properties.reallity_def = 553
+        self.original_properties.reality_def = 553
         self.original_properties.mental_def = 513
         self.original_properties.critical_rate = 0
         self.original_properties.critical_resist = 0

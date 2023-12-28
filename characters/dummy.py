@@ -1,5 +1,6 @@
 import copy
 from characters.character import *
+from characters.skill import Skill
 
 class DummyCharacter(Character):
     def __init__(self, name) -> None:
@@ -7,7 +8,7 @@ class DummyCharacter(Character):
         self.attack = 100
         self.life = 8888
         self.original_properties = Properties()
-        self.original_properties.reallity_def = 553
+        self.original_properties.reality_def = 553
         self.original_properties.mental_def = 513
         self.original_properties.critical_rate = 0
         self.original_properties.critical_resist = 0
@@ -23,13 +24,13 @@ class DummyCharacter(Character):
         self.original_properties.penetration_rate = 0
         self.moxie = 0
         self.reset_current_properties()
-        self.skill1 = DummySkill(name + "_skill1", self)
-        self.skill2 = DummySkill(name + "_skill2", self)
+        self.skill1 = DummySkill(self, name + "_skill1")
+        self.skill2 = DummySkill(self, name + "_skill2")
     
     def reset_current_properties(self):
         self.properties = copy.copy(self.original_properties)
 
 class DummySkill(Skill):
-    def __init__(self, name, caster) -> None:
-        self.name = name
-        super().__init__(caster)
+    def __init__(self, caster, name) -> None:
+        super().__init__(caster, name)
+        self.dealDamage = False
