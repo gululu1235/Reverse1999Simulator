@@ -16,9 +16,9 @@ All position indexes below are 0 based.
 
 - u [p1]: Use card on [p1]
 
-- c1: Chord move 1 (refresh card)
+- c1: Tune move 1 (refresh card)
 
-- c2: Chord move 2 (Generate wildcard)
+- c2: Tune move 2 (Generate wildcard)
 
 - e: End the turn.
 
@@ -30,7 +30,7 @@ All position indexes below are 0 based.
 PS E:\projects\Reverse1999Simulator> & c:/Windows/py.exe e:/projects/Reverse1999Simulator/battlefield.py
 Reset cards
 Turn:1 starts.
-Chord points: 20
+Tune points: 20
 Red team:
 Centurion_330101        9152    100.00% 0       []
 Bkornblume_320105       8797    100.00% 0       []
@@ -58,7 +58,7 @@ attacker: Bkornblume_320105 target: Enemy1 dmg: 1543 life: 998456 critical: Fals
 Turn1 ends.
 *******************************************************
 Turn:2 starts.
-Chord points: 38
+Tune points: 38
 Red team:
 Centurion_330101        9152    100.00% 0       [Sturdiness_1t]
 Bkornblume_320105       8797    100.00% 1       [Sturdiness_1t]
@@ -85,7 +85,7 @@ attacker: MedicinePocket_301090 target: Enemy1 dmg: 1412 life: 992186 critical: 
 Turn2 ends.
 *******************************************************
 Turn:3 starts.
-Chord points: 55
+Tune points: 55
 Red team:
 Centurion_330101        9152    100.00% 2       [Sturdiness_1t]
 Bkornblume_320105       8797    100.00% 1       [Sturdiness_1t]

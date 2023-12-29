@@ -12,49 +12,64 @@ from characters.enemies import Enemy1
 from characters.dummy import *
 from characters.medicine_pocket import MedicinePocket
 from characters.skill import SkillType
-from chords import FirstChord
+from tune import FirstTune
 from status.debuffs import Daze, Seal
 
 class BattleField:
-    def __init__(self, position_count, action_count, red_team, blue_team, chordType) -> None:
+    def __init__(self, position_count, action_count, red_team, blue_team, tuneType, max_turn = 15) -> None:
         self.position_count = position_count
         self.action_count = action_count
         self.red_team = red_team
         self.blue_team = blue_team
+        self.max_turn = max_turn
         card_list = []
         for character in red_team:
             card_list.append(Card(character.skill1, 1))
             card_list.append(Card(character.skill2, 1))
 
         self.red_card_server = CardServer(card_list)
-        self.endFlag = False
         self.turn = 0
         self.current_cards = self.red_card_server.get_initial_cards(position_count)
-        self.chord = chordType(self)
+        self.tune = tuneType(self)
+        self.state = State.RUNNING
+        self.turn_cards = []
+        self.input_count = 0
+        self.bad_input = False
     
     def start(self):
-        while not self.endFlag:
-            self.turn += 1
-            while (len(self.current_cards) < self.position_count):
-                self.current_cards.extend(self.red_card_server.get_next(self.position_count - len(self.current_cards)))
-                self.evaluate_cards()
-            self.turn_start_events()
-            cards = self.get_cards_from_input()
-            self.execute_cards(cards)
-            self.turn_end_events()
+        self.turn_start_events()
 
-    def print_cards(self):
-        print('Cards:')
-        print("\t".join(card.name() for card in self.current_cards))
-    
-    def get_cards_from_input(self):
+    def step(self, input):
+        if self.state == State.END:
+            return self
+
+        self.handle_input(input)
+        if self.bad_input:
+            return self
+
+        if self.input_count == self.action_count:
+            self.execute_cards(self.turn_cards)
+            self.turn_end_events()
+            self.turn_start_events()
+
+    def handle_input(self, input):
         max_count = self.action_count
-        cards = []
+        self.bad_input = False
+
+        # Tune cards can only be used when input_count == 0
+        if self.input_count == 0 and input == 'c1':
+            # tune: refresh
+            if not self.tune.refresh_cards():
+                self.bad_input = True
+            return
+        elif self.input_count == 0 and input == 'c2':
+            if not self.tune.add_wild_card():
+                self.bad_input = True
+            return
+        
         def input_action_to_card(action):
             result = None
             if action[0] == CardAction.Move:
-                if action[1] == action[2] or action[1] == action[2] - 1: # not moved
-                    return result
                 picked = self.current_cards[action[1]]
                 self.current_cards.insert(action[2], picked)
                 if (action[2] > action[1]):
@@ -63,44 +78,23 @@ class BattleField:
                     self.current_cards.pop(action[1] + 1)
                 if not picked.is_wildcard:
                     result = Card(picked.skill, 0)
-
             elif action[0] == CardAction.Use:
                 result = self.current_cards.pop(action[1])
             return result
-        i = 1
-        while i <= max_count:
-            user_input = input("Action " + str(i) + ":")
-            if user_input.lower() == 'exit':
-                self.endFlag = True
-                break
-            if user_input.lower() == 'e':
-                break
-            if user_input == 'c1':
-                # chord: refresh
-                self.chord.refresh_cards()
-                self.print_cards()
-                continue
-            if user_input == 'c2':
-                self.chord.add_wild_card()
-                self.print_cards()
-                continue
-            user_inputs = user_input.split(' ')
-            if user_inputs[0].lower() == 'm' and len(user_inputs) == 3:
-                card = input_action_to_card((CardAction.Move, int(user_inputs[1]), int(user_inputs[2])))
-                if card:
-                    cards.append(card)
-                    i += 1
-                self.evaluate_cards()
-                self.print_cards()
-            elif user_inputs[0].lower() == 'u' and len(user_inputs) == 2:
-                cards.append(input_action_to_card((CardAction.Use, int(user_inputs[1]))))
-                i += 1
-                self.evaluate_cards()
-                self.print_cards()
-            else:
-                raise "Invalid input"
 
-        return cards
+        user_inputs = input.split(' ')
+        if user_inputs[0].lower() == 'm' and validate_move_input(user_inputs, self.current_cards):
+            card = input_action_to_card((CardAction.Move, int(user_inputs[1]), int(user_inputs[2])))
+            if card:
+                self.turn_cards.append(card)
+            self.evaluate_cards()
+            self.input_count += 1
+        elif user_inputs[0].lower() == 'u' and validate_use_input(user_inputs, self.current_cards):
+            self.turn_cards.append(input_action_to_card((CardAction.Use, int(user_inputs[1]))))
+            self.evaluate_cards()
+            self.input_count += 1
+        else:
+            self.bad_input = True
 
     def evaluate_cards(self):
         i = 0
@@ -175,20 +169,30 @@ class BattleField:
         if (character.moxie == 5
              and not any((card.skill.caster == character and card.skill.is_ultimate) for card in self.current_cards)
              and not self.red_card_server.check_ultimate(character)):
-            self.red_card_server.try_add_ultimate(Card(character.ultimate, 1))
+            self.red_card_server.try_add_ultimate(Card(character.ultimate, 4))
 
     def after_move_events(self):
-        self.chord.after_move()
+        self.tune.after_move()
 
     def after_merge_events(self):
-        self.chord.after_merge()
+        self.tune.after_merge()
 
     def turn_start_events(self):
+        self.turn += 1
+        if self.turn > self.max_turn:
+            self.state = State.END
+            return
+
+        self.turn_cards = []
+        self.input_count = 0
+        while (len(self.current_cards) < self.position_count):
+            self.current_cards.extend(self.red_card_server.get_next(self.position_count - len(self.current_cards)))
+            self.evaluate_cards()
         for character in self.red_team:
             character.update_status_on_turn_start(self.red_team, self.blue_team)
         for character in self.blue_team:
             character.update_status_on_turn_start(self.blue_team, self.red_team)
-        self.chord.turn_start()
+        self.tune.turn_start()
         InfoBroker.turn_start()
 
     def turn_end_events(self):
@@ -203,14 +207,43 @@ class BattleField:
     def after_use_skill_events(self, skill):
         for character in self.red_team + self.blue_team:
             character.update_status_after_use_skill(skill)
-        self.chord.after_use_skill()
+        self.tune.after_use_skill()
 
 class CardAction(Enum):
     Move = 1
     Use = 2
 
+class State(Enum):
+    RUNNING = 1
+    END = 2
 
-battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstChord)
-InfoBroker.register_processor(ConsoleLogger(battle))
-InfoBroker.register_processor(BattleStatAggregator(battle, output_folder='battle_stat'))
-battle.start()
+def validate_move_input(inputs, cards):
+    count = len(cards)
+    if len(inputs) != 3:
+        return False
+    try:
+        pos1 = int(inputs[1])
+        pos2 = int(inputs[2])
+        if pos1 < 0 or pos1 >= count or pos2 < 0 or pos2 >= count:
+            return False
+        if pos1 == pos2 or pos1 == pos2 - 1:
+            return False
+        if cards[pos1].is_wildcard and cards[pos1].level < cards[pos2].level:
+            return False
+    except ValueError:
+        return False
+    return True
+
+def validate_use_input(inputs, cards):
+    count = len(cards)
+    if len(inputs) != 2:
+        return False
+    try:
+        pos = int(inputs[1])
+        if pos < 0 or pos >= count:
+            return False
+        if cards[pos].is_wildcard:
+            return False
+    except ValueError:
+        return False
+    return True

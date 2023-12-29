@@ -1,5 +1,5 @@
 P0:
-1. ~~Implement chord~~
+1. ~~Implement tune~~
 2. Enable move/action logic for red team
 3. ~~Add at least 2 more characters~~
 4. Implement at least 3 心相

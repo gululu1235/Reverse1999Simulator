@@ -7,7 +7,7 @@ class ConsoleLogger(InfoProcessor):
 
     def turn_start(self):
         print('Turn:' + str(self.battlefield.turn) + ' starts.')
-        print('Chord points: ' + str(self.battlefield.chord.points))
+        print('Tune points: ' + str(self.battlefield.tune.points))
         print('Red team:')
         for character in self.battlefield.red_team:
             status_str = ", ".join(str(status) for status in character.status)
@@ -22,7 +22,6 @@ class ConsoleLogger(InfoProcessor):
             life_percentage = character.life / character.max_life * 100
             info = [character.name, str(character.life), f"{life_percentage:.2f}%", str(character.moxie), status]
             print("\t".join(info))
-        self.__print_cards()
 
     def turn_end(self):
         print ('Turn' + str(self.battlefield.turn) + ' ends.')
@@ -66,7 +65,3 @@ class ConsoleLogger(InfoProcessor):
 
     def status_set_turn_count(self, status, value):
         pass
-
-    def __print_cards(self):
-        print('Cards:')
-        print("\t".join(card.name() for card in self.battlefield.current_cards))
