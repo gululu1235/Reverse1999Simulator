@@ -181,6 +181,7 @@ class BattleField:
         self.turn += 1
         if self.turn > self.max_turn:
             self.state = State.END
+            InfoBroker.battle_end()
             return
 
         self.turn_cards = []

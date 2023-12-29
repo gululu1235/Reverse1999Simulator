@@ -13,6 +13,10 @@ class BattleInfoBroker:
         for processor in self.processors:
             processor.turn_end()
 
+    def battle_end(self):
+        for processor in self.processors:
+            processor.battle_end()
+
     def before_card_execute(self, card):
         for processor in self.processors:
             processor.before_card_execute(card)

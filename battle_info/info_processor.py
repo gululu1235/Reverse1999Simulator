@@ -8,6 +8,9 @@ class InfoProcessor:
     def turn_end(self):
         pass
 
+    def battle_end(self):
+        pass
+
     def before_card_execute(self, card):
         pass
 
