@@ -2,6 +2,7 @@ import random
 from battle_info.battle_info_broker import InfoBroker
 from battle_info.battle_stat_aggregator import BattleStatAggregator
 from battle_info.console_logger import ConsoleLogger
+from card import Card
 from characters.bkornblume import Bkornblume
 from calculation import calc_damage
 from enum import Enum
@@ -11,6 +12,7 @@ from characters.enemies import Enemy1
 from characters.dummy import *
 from characters.medicine_pocket import MedicinePocket
 from characters.skill import SkillType
+from chords import FirstChord
 from status.debuffs import Daze, Seal
 
 class BattleField:
@@ -68,7 +70,10 @@ class BattleField:
         i = 1
         while i <= max_count:
             user_input = input("Action " + str(i) + ":")
-            if user_input == 'end' or user_input.lower() == 'e':
+            if user_input.lower() == 'exit':
+                self.endFlag = True
+                break
+            if user_input.lower() == 'e':
                 break
             if user_input == 'c1':
                 # chord: refresh
@@ -203,54 +208,6 @@ class BattleField:
 class CardAction(Enum):
     Move = 1
     Use = 2
-
-class Card:
-    def __init__(self, skill, level, is_wildcard = False) -> None:
-        self.skill = skill
-        self.level = level
-        self.is_wildcard = is_wildcard
-    def name(self):
-        if (self.level == 0):
-            return "Move"
-        if (self.is_wildcard):
-            return "Wildcard" + '_' + str(self.level)
-        return self.skill.name + '_' + str(self.level)
-
-class FirstChord:
-    def __init__(self, battlefield) -> None:
-        self.points = 15
-        self.c2_cost = 40
-        self.c1 = self.refresh_cards
-        self.battlefield = battlefield
-
-    def after_move(self):
-        self.points += 3
-    
-    def after_merge(self):
-        self.points += 2
-    
-    def turn_start(self):
-        self.points += 5
-    
-    def after_use_skill(self):
-        self.points += 4
-    
-    def refresh_cards(self):
-        if self.points < 25:
-            raise "Not enough points"
-        self.points -= 25
-
-        cards = self.battlefield.red_card_server.get_initial_cards(self.battlefield.position_count)
-        for i in range(len(self.battlefield.current_cards)):
-            if not self.battlefield.current_cards[i].skill.is_ultimate:
-                self.battlefield.current_cards[i].skill = cards[i].skill
-
-    def add_wild_card(self):
-        if self.points < self.c2_cost:
-            raise "Not enough points"
-        self.points -= self.c2_cost
-        self.c2_cost = min(self.c2_cost + 10, 60)
-        self.battlefield.current_cards.append(Card(Skill(None, "wildcard"), 1, True))
 
 
 battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstChord)
