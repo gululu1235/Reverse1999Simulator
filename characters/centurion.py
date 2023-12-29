@@ -29,7 +29,7 @@ class Centurion(Character):
         super().set_attacker_battle_properties(target)
         self.properties.dmg_bonus += 0.06 * self.moxie
     
-    def on_moxie_change(self, before, after): # Inheritance 3
+    def on_moxie_change_internal(self, before, after): # Inheritance 3
         if after < before:
             heal = self.max_life * 0.2
             self.life = min(self.life + heal, self.max_life)
@@ -39,58 +39,46 @@ class OutdoorSuperstar(Skill):
         super().__init__(caster, "OutdoorSuperstar")
         self.target_number = 2
     
-    def pre_damage(self, level, targets:list[Character]) -> None:
+    def pre_damage_internal(self, level, targets:list[Character]) -> None:
         if level == 2:
             self.caster.adjust_moxie(1)
         elif level == 3:
             self.caster.adjust_moxie(2)
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         if level == 1:
             return 1.5
         if level == 2:
             return 1.5
         elif level == 3:
             return 2.25
-    
-    def post_damage(self, level, targets:list[Character]) -> None:
-        pass
 
 class VictoriousGeneral(Skill):
     def __init__(self, caster) -> None:
         super().__init__(caster, "VictoriousGeneral")
         self.target_number = 1
-    
-    def pre_damage(self, level, targets:list[Character]) -> None:
-        pass
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         if level == 1:
             return 1.8 + self.caster.moxie * 0.14
         if level == 2:
             return 2.7 + self.caster.moxie * 0.21
         elif level == 3:
             return 4.5 + self.caster.moxie * 0.35
-    
-    def post_damage(self, level, targets:list[Character]) -> None:
-        pass
 
 class RealityShowPremier(Skill):
     def __init__(self, caster) -> None:
         super().__init__(caster, "RealityShowPremier")
         self.target_number = 10
         self.is_ultimate = True
-    
-    def pre_damage(self, level, targets:list[Character]) -> None:
-        pass
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         return 3
     
-    def post_damage(self, level, targets:list[Character]) -> None:
+    def post_damage_internal(self, level, targets:list[Character]) -> None:
         for target in targets:
             weakness = first_or_default(target.status, lambda x: isinstance(x, Weakness))
             if weakness is not None:
-                weakness.times_count += 1
+                weakness.adjust_times_count(1)
             else:
                 target.status.append(Weakness(self, target, 1))

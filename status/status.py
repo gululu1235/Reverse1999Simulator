@@ -1,5 +1,7 @@
 from enum import Enum
 
+from battle_info.battle_info_broker import InfoBroker
+
 class StatusType(Enum):
     NegStatus = 1
     PosStatus = 2
@@ -24,6 +26,18 @@ class Status:
         if self.turn_count < 100:
             info += '_' + str(self.turn_count) + 'r'
         return info
+
+    def adjust_times_count(self, value):
+        InfoBroker.status_adjust_times_count(self, value)
+        self.times_count = max(self.times_count + value, 0)
+    
+    def adjust_turn_count(self, value):
+        InfoBroker.status_adjust_turn_count(self, value)
+        self.turn_count = max(self.turn_count + value, 0)
+
+    def set_turn_count(self, value):
+        InfoBroker.status_set_turn_count(self, value)
+        self.turn_count = max(value, 0)
 
     def property_impact(self):
         pass

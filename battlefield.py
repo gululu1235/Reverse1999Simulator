@@ -1,4 +1,7 @@
 import random
+from battle_info.battle_info_broker import InfoBroker
+from battle_info.battle_stat_aggregator import BattleStatAggregator
+from battle_info.console_logger import ConsoleLogger
 from characters.bkornblume import Bkornblume
 from calculation import calc_damage
 from enum import Enum
@@ -30,41 +33,17 @@ class BattleField:
     def start(self):
         while not self.endFlag:
             self.turn += 1
-            print('Turn:' + str(self.turn))
             while (len(self.current_cards) < self.position_count):
                 self.current_cards.extend(self.red_card_server.get_next(self.position_count - len(self.current_cards)))
                 self.evaluate_cards()
             self.turn_start_events()
-            self.print_battlefield()
-            self.print_cards()
             cards = self.get_cards_from_input()
             self.execute_cards(cards)
             self.turn_end_events()
-            print('**************************************')
-
-    def print_intro(self):
-        pass
 
     def print_cards(self):
         print('Cards:')
         print("\t".join(card.name() for card in self.current_cards))
-    
-    def print_battlefield(self):
-        print('Chord points: ' + str(self.chord.points))
-        print('Red team:')
-        for character in self.red_team:
-            status_str = ", ".join(str(status) for status in character.status)
-            status =  f"[{status_str}]"
-            life_percentage = character.life / character.max_life * 100
-            info = [character.name, str(character.life), f"{life_percentage:.2f}%", str(character.moxie), status]
-            print("\t".join(info))
-        print('Blue team:')
-        for character in self.blue_team:
-            status_str = ", ".join(str(status) for status in character.status)
-            status =  f"[{status_str}]"
-            life_percentage = character.life / character.max_life * 100
-            info = [character.name, str(character.life), f"{life_percentage:.2f}%", str(character.moxie), status]
-            print("\t".join(info))
     
     def get_cards_from_input(self):
         max_count = self.action_count
@@ -147,7 +126,7 @@ class BattleField:
 
     def execute_cards(self, cards):
         for card in cards:
-            print('Executing card: ' + card.name())
+            InfoBroker.before_card_execute(card)
             if (card.skill == None):
                 continue
 
@@ -205,6 +184,7 @@ class BattleField:
         for character in self.blue_team:
             character.update_status_on_turn_start(self.blue_team, self.red_team)
         self.chord.turn_start()
+        InfoBroker.turn_start()
 
     def turn_end_events(self):
         for character in self.red_team:
@@ -213,6 +193,7 @@ class BattleField:
             character.update_status_on_turn_end(self.blue_team, self.red_team)
         self.current_cards = [x for x in self.current_cards if not x.is_wildcard]
         self.evaluate_ultimate_cards()
+        InfoBroker.turn_end()
 
     def after_use_skill_events(self, skill):
         for character in self.red_team + self.blue_team:
@@ -273,4 +254,6 @@ class FirstChord:
 
 
 battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstChord)
+InfoBroker.register_processor(ConsoleLogger(battle))
+InfoBroker.register_processor(BattleStatAggregator(battle, output_folder='battle_stat'))
 battle.start()

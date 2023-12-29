@@ -36,7 +36,7 @@ class InherentHabit(Skill):
         super().__init__(caster, "InherentHabit")
         self.target_number = 1
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         if level == 1:
             return 1.5
         elif level == 2:
@@ -44,7 +44,7 @@ class InherentHabit(Skill):
         elif level == 3:
             return 4.5
     
-    def post_damage(self, level, targets:list[Character]) -> None:
+    def post_damage_internal(self, level, targets:list[Character]) -> None:
         target = targets[0]
         value = 0.2
         dmg_up = first_or_default(target.status, lambda x: isinstance(x, DmgTakenUp))
@@ -52,7 +52,7 @@ class InherentHabit(Skill):
             target.append_status(DmgTakenUp(self.caster, target, 1, value))
         elif dmg_up.value < value or dmg_up.turn_count < 1:
             dmg_up.value = value
-            dmg_up.turn_count = 1
+            dmg_up.set_turn_count(1)
 
 class AlchemyWare(Skill):
     def __init__(self, caster) -> None:
@@ -61,7 +61,8 @@ class AlchemyWare(Skill):
         self.skillType = SkillType.HEAL
         self.dealDamage = False
         self.heal = True
-    def get_skill_multiplier(self, level, target:Character) -> float:
+
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         if level == 1:
             return 0.8
         elif level == 2:
@@ -69,13 +70,13 @@ class AlchemyWare(Skill):
         elif level == 3:
             return 2
     
-    def post_damage(self, level, targets:list[Character]) -> None:
+    def post_damage_internal(self, level, targets:list[Character]) -> None:
         for target in targets:
             sturdiness = first_or_default(target.status, lambda x: isinstance(x, Sturdiness))
             if sturdiness is None:
                 target.status.append(Sturdiness(self, target, 1))
             else:
-                sturdiness.times_count += 1
+                sturdiness.adjust_times_count(1)
 
 class TwentySixSecondaryReactions(Skill):
     def __init__(self, caster) -> None:
@@ -83,13 +84,13 @@ class TwentySixSecondaryReactions(Skill):
         self.target_number = 1
         self.is_ultimate = True
     
-    def pre_damage(self, level, targets:list[Character]) -> None:
+    def pre_damage_internal(self, level, targets:list[Character]) -> None:
         pass
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         return 4.5
     
-    def post_damage(self, level, targets:list[Character]) -> None:
+    def post_damage_internal(self, level, targets:list[Character]) -> None:
         target = targets[0]
         daze = first_or_default(target.status, lambda x: isinstance(x, Daze))
         immune = first_or_default(target.status, lambda x: isinstance(x, Immune))
@@ -97,6 +98,6 @@ class TwentySixSecondaryReactions(Skill):
             if immune is None or not (Daze in immune.list):
                 target.append_status(Daze(self.caster, target, 1))
         else:
-            daze.turn_count += 1
+            daze.adjust_turn_count(1)
 
         self.caster.adjust_moxie(1)

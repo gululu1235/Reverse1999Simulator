@@ -45,7 +45,7 @@ class WatchHerSleeves(Skill):
         super().__init__(caster, "WatchHerSleeves")
         self.target_number = 2
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         enhanced = False
         if any(status.type in negStatuses for status in target.status):
             enhanced = True
@@ -63,10 +63,7 @@ class PryingEar(Skill):
         self.target_number = 10
         self.dealDamage = False
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
-        0
-    
-    def post_damage(self, level, targets:list[Character]) -> None:
+    def post_damage_internal(self, level, targets:list[Character]) -> None:
         value = 0
         if level == 1:
             value = 0.15
@@ -81,14 +78,14 @@ class PryingEar(Skill):
                 target.append_status(DmgTakenUp(self.caster, target, 2, value))
             elif dmg_up.value < value or dmg_up.turn_count < 2:
                 dmg_up.value = value
-                dmg_up.turn_count = 2
+                dmg_up.set_turn_count(2)
 
             def_down = first_or_default(target.status, lambda x: isinstance(x, RealityDefDown))
             if def_down is None:
                 target.append_status(RealityDefDown(self.caster, target, 2, value))
             elif def_down.value < value or def_down.turn_count < 2:
                 def_down.value = value
-                def_down.turn_count = 2
+                def_down.set_turn_count(2)
 
 class UninvitedReviewer(Skill):
     def __init__(self, caster) -> None:
@@ -96,10 +93,10 @@ class UninvitedReviewer(Skill):
         self.target_number = 1
         self.is_ultimate = True
 
-    def get_skill_multiplier(self, level, target:Character) -> float:
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
         return 8
 
-    def post_damage(self, level, targets:list[Character]) -> None:
+    def post_damage_internal(self, level, targets:list[Character]) -> None:
         for target in targets:
             seal = first_or_default(target.status, lambda x: isinstance(x, Seal))
             immune = first_or_default(target.status, lambda x: isinstance(x, Immune))
@@ -109,4 +106,4 @@ class UninvitedReviewer(Skill):
                 else:
                     target.append_status(Seal(self.caster, target, 3))
             else:
-                seal.turn_count += 3
+                seal.adjust_turn_count(3)

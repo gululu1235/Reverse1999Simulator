@@ -1,4 +1,5 @@
 import copy
+from battle_info.battle_info_broker import InfoBroker
 from status.status import Status
 
 
@@ -39,6 +40,7 @@ class Character:
     
     def append_status(self, status:Status):
         self.status.append(status)
+        InfoBroker.character_status_add(self, status)
 
     def update_status_on_damage_taken(self):
         for status in self.status:
@@ -72,12 +74,17 @@ class Character:
         pass
     
     def on_moxie_change(self, before, after):
+        self.on_moxie_change_internal(before, after)
+        InfoBroker.character_moxie_change(self, before, after)
+
+    def on_moxie_change_internal(self, before, after):
         pass
 
     def evaluate_status(self):
         for status in self.status:
             if (status.times_count == 0 or status.turn_count == 0):
                 self.status.remove(status)
+                InfoBroker.character_status_remove(self, status)
 
 class Properties:
     def __init__(self) -> None:

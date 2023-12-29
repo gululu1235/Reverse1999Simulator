@@ -1,5 +1,6 @@
 from enum import Enum
 import random
+from battle_info.battle_info_broker import InfoBroker
 from characters.character import Character
 from calculation import calc_damage, calc_heal
 from dmg_type import DamageType
@@ -17,15 +18,29 @@ class Skill:
         self.critical_eligible = True
 
     def pre_damage(self, level, targets:list[Character]) -> None:
-        pass
+        self.pre_damage_internal(level, targets)
+        InfoBroker.skill_pre_damage(self, level, targets)
 
     def get_skill_multiplier(self, level, target:Character) -> float:
-        pass
+        result = self.get_skill_multiplier_internal(level, target)
+        InfoBroker.skill_get_skill_multiplier(self, level, target, result)
+        return result
     
     def post_damage(self, level, targets:list[Character]) -> None:
+        self.post_damage_internal(level, targets)
+        InfoBroker.skill_post_damage(self, level, targets)
+    
+    def pre_damage_internal(self, level, targets:list[Character]) -> None:
+        pass
+
+    def get_skill_multiplier_internal(self, level, target:Character) -> float:
+        return 0
+    
+    def post_damage_internal(self, level, targets:list[Character]) -> None:
         pass
 
     def execute(self, level, targets:list[Character]):
+        InfoBroker.skill_execute(self, level, targets)
         self.pre_damage(level, targets)
         if self.dealDamage:
             for target in targets:
@@ -35,8 +50,9 @@ class Skill:
                 is_crit= self.critical_eligible and is_critical(self.caster, target)
                 dmg = calc_damage(self.caster, target, self.dmgType, multiplier, self.is_ultimate, is_crit, False)
                 # deal damage
-                target.life = max(0, target.life - dmg)
-                print("attacker:", self.caster.name, "target:", target.name, "dmg:", dmg, "life:", target.life, "critical:", is_crit)
+                dmg = min(dmg, target.life)
+                target.life -= dmg
+                InfoBroker.skill_deal_damage(self, level, target, dmg, is_crit)
                 # update status
                 target.update_status_on_damage_taken()
             self.caster.update_status_on_attack_end()
@@ -47,8 +63,9 @@ class Skill:
                 is_crit= self.critical_eligible and is_critical(self.caster, target)
                 heal = calc_heal(self.caster, target, multiplier, is_crit)
                 # heal
-                target.life = min(target.max_life, target.life + heal)
-                print("healer:", self.caster.name, "target:", target.name, "heal:", heal, "life:", target.life, "critical:", is_crit)
+                heal = min(heal, target.max_life - target.life)
+                target.life += heal
+                InfoBroker.skill_heal(self, level, target, heal, is_crit)
                 # update status
                 target.update_status_on_heal_taken()
             self.caster.update_status_on_heal_end()

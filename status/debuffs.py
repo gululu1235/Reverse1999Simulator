@@ -10,7 +10,7 @@ class Weakness(Status):
             self.target.properties.dmg_bonus -= 0.25
     
     def on_attack_end(self):
-        self.times_count = max(self.times_count - 1, 0)
+        self.adjust_times_count(-1)
 
 class DmgTakenUp(Status):
     def __init__(self, caster:Character, target:Character, turn_count, value) -> None:
@@ -21,7 +21,7 @@ class DmgTakenUp(Status):
         self.target.properties.dmg_taken_reduction -= self.value
     
     def on_turn_end(self, own_team, opponent_team):
-        self.turn_count -= 1
+        self.adjust_turn_count(-1)
 
 class RealityDefDown(Status):
     def __init__(self, caster:Character, target:Character, turn_count, value) -> None:
@@ -32,18 +32,18 @@ class RealityDefDown(Status):
         self.target.properties.reality_def_bonus_rate -= self.value
     
     def on_turn_end(self, own_team, opponent_team):
-        self.turn_count -= 1
+        self.adjust_turn_count(-1)
 
 class Seal(Status):
     def __init__(self, caster:Character, target:Character, turn_count) -> None:
         super().__init__("Seal", caster, target, StatusType.Control, turn_count = turn_count)
 
     def on_turn_start(self, own_team, opponent_team):
-        self.turn_count -= 1
+        self.adjust_turn_count(-1)
 
 class Daze(Status):
     def __init__(self, caster:Character, target:Character, turn_count) -> None:
         super().__init__("Daze", caster, target, StatusType.Control, turn_count = turn_count)
 
     def on_turn_start(self, own_team, opponent_team):
-        self.turn_count -= 1
+        self.adjust_turn_count(-1)

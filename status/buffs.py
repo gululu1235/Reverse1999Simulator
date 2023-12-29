@@ -7,7 +7,7 @@ class Immune(Status):
         self.list = []
 
     def on_turn_end(self, own_team, opponent_team):
-        self.turn_count -= 1
+        self.adjust_turn_count(-1)
 
 class Sturdiness(Status):
     def __init__(self, caster, target, times_count) -> None:
@@ -18,4 +18,4 @@ class Sturdiness(Status):
             self.target.properties.dmg_taken_reduction += 0.25
 
     def on_dmg_taken(self):
-        self.times_count = max(self.times_count - 1, 0)
+        self.adjust_times_count(-1)
