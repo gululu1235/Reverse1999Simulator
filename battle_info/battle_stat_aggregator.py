@@ -11,13 +11,15 @@ class BattleStatAggregator(InfoProcessor):
             os.makedirs(output_folder)
         self.filepath = output_folder + "\\battle_state_" + time.strftime("%Y%m%d-%H%M%S") + ".csv"
         with open(self.filepath, "w") as f:
-            f.write("turn,character,move_count,damage,heal\n")
+            f.write("turn,color,character,move_count,damage,heal\n")
         
-        self.__init_stat(self.battlefield.red_team + self.battlefield.blue_team)
+        self.__init_stat("red", self.battlefield.red_team)
+        self.__init_stat("blue", self.battlefield.blue_team)
 
-    def __init_stat(self, characters):
+    def __init_stat(self, color, characters):
         for character in characters:
             self.stat[character.name] = {}
+            self.stat[character.name]["color"] = color
             self.stat[character.name]["damage"] = 0
             self.stat[character.name]["heal"] = 0
             self.stat[character.name]["move_count"] = 0
@@ -37,6 +39,7 @@ class BattleStatAggregator(InfoProcessor):
         with open(self.filepath, "a") as f:
             for character in self.stat:
                 f.write(f"{self.battlefield.turn},")
+                f.write(f"{self.stat[character]['color']},")
                 f.write(f"{character},")
                 f.write(f"{self.stat[character]['move_count']},")
                 f.write(f"{self.stat[character]['damage']},")
