@@ -99,7 +99,7 @@ Turn3 ends.
 *******************************************************
 ```
 
-### sample battle state
+### Sample battle stats
 
 Currently the tool outputs a csv file for a turn-based battle stat.
 
