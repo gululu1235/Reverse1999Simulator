@@ -104,7 +104,7 @@ Turn3 ends.
 Currently the tool outputs a csv file for a turn-based battle stat.
 
 ```csv
-turn,character,move_count,damage,heal
+turn,color,character,move_count,damage,heal
 1,red,Centurion_330101,0,0,0
 1,red,Bkornblume_320105,1,1543,0
 1,red,MedicinePocket_301090,2,0,0
