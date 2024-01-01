@@ -42,6 +42,12 @@ In pursuit of my personal interest in learning, I have developed a simple model 
 
 After running a 1-hour training session, the results, as shown in [this figure](sb3_train_monitor/Figure_1.png), appear quite promising. 
 
+#### Training
+
+```bash
+python -m rl.sb3_train
+```
+
 #### Control Group Performance:
 
 - `USE_0`: Always uses the first card
