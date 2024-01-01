@@ -21,8 +21,8 @@ def print_cards():
 
 while battle.state == State.RUNNING:
     print_cards()
-    #user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.action_count)}:")
-    user_input = "u 0"
+    user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.action_count)}:")
+    #user_input = "u 0"
     battle.step(user_input)
 
 dmg_done = sum(c.max_life - c.life for c in battle.blue_team)

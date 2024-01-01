@@ -1,18 +1,24 @@
 # Reverse 1999 Simulator
 
+## Introduction (modified by GPT-4)
+
+Welcome to the simulator for the battle system of [Reverse 1999](https://re1999.bluepoch.com/). Our goal is to create a comprehensive and immersive simulated battle environment, tailored for both interactive human engagement and programmatic applications. This tool is designed to replicate the dynamic and strategic elements of Reverse 1999's battle system, offering users a platform to explore, experiment, and enhance their understanding of the game mechanics.
+
 ## Sample usage
 
-### Run the simulator
+### Interactive usage
 
 ```bash
-.\battlefield.py
+.\main.py
 ```
+
+This will activate a battle where Centurion, Bkornblume and Medicine_pocket against a dummy enermy with reasonable defense stats.
 
 ### Supported action
 
 All position indexes below are 0 based.
 
-- m [p1] [p2]: Move card from [p1] to before card [p2]. The index number is 0 based.
+- m [p1] [p2]: Move card from [p1] to before card [p2].
 
 - u [p1]: Use card on [p1]
 
@@ -24,98 +30,30 @@ All position indexes below are 0 based.
 
 - exit: Exit
 
-### Sample console output
+## Features (modified by GPT-4)
 
-```text
-PS E:\projects\Reverse1999Simulator> & c:/Windows/py.exe e:/projects/Reverse1999Simulator/battlefield.py
-Reset cards
-Turn:1 starts.
-Tune points: 20
-Red team:
-Centurion_330101        9152    100.00% 0       []
-Bkornblume_320105       8797    100.00% 0       []
-MedicinePocket_301090   9853    100.00% 0       []
-Blue team:
-Enemy1  999999  100.00% 0       []
-Cards:
-AlchemyWare_1   WatchHerSleeves_1       VictoriousGeneral_1     OutdoorSuperstar_1      InherentHabit_1 PryingEar_1     AlchemyWare_1
-Action 1:m 6 0
-Cards:
-AlchemyWare_2   WatchHerSleeves_1       VictoriousGeneral_1     OutdoorSuperstar_1      InherentHabit_1 PryingEar_1
-Action 2:u 0
-Cards:
-WatchHerSleeves_1       VictoriousGeneral_1     OutdoorSuperstar_1      InherentHabit_1 PryingEar_1
-Action 3:u 0
-Cards:
-VictoriousGeneral_1     OutdoorSuperstar_1      InherentHabit_1 PryingEar_1
-Executing card: Move
-Executing card: AlchemyWare_2
-healer: MedicinePocket_301090 target: MedicinePocket_301090 heal: 0 life: 9853 critical: False
-healer: MedicinePocket_301090 target: Bkornblume_320105 heal: 0 life: 8797 critical: False
-healer: MedicinePocket_301090 target: Centurion_330101 heal: 0 life: 9152 critical: False
-Executing card: WatchHerSleeves_1
-attacker: Bkornblume_320105 target: Enemy1 dmg: 1543 life: 998456 critical: False
-Turn1 ends.
-*******************************************************
-Turn:2 starts.
-Tune points: 38
-Red team:
-Centurion_330101        9152    100.00% 0       [Sturdiness_1t]
-Bkornblume_320105       8797    100.00% 1       [Sturdiness_1t]
-MedicinePocket_301090   9853    100.00% 3       [Sturdiness_1t]
-Blue team:
-Enemy1  998456  99.85%  0       []
-Cards:
-VictoriousGeneral_1     OutdoorSuperstar_1      InherentHabit_1 PryingEar_1     OutdoorSuperstar_1      AlchemyWare_1   VictoriousGeneral_1
-Action 1:u 0
-Cards:
-OutdoorSuperstar_1      InherentHabit_1 PryingEar_1     OutdoorSuperstar_1      AlchemyWare_1   VictoriousGeneral_1
-Action 2:u 0
-Cards:
-InherentHabit_1 PryingEar_1     OutdoorSuperstar_1      AlchemyWare_1   VictoriousGeneral_1
-Action 3:u 0
-Cards:
-PryingEar_1     OutdoorSuperstar_1      AlchemyWare_1   VictoriousGeneral_1
-Executing card: VictoriousGeneral_1
-attacker: Centurion_330101 target: Enemy1 dmg: 2670 life: 995786 critical: False
-Executing card: OutdoorSuperstar_1
-attacker: Centurion_330101 target: Enemy1 dmg: 2188 life: 993598 critical: False
-Executing card: InherentHabit_1
-attacker: MedicinePocket_301090 target: Enemy1 dmg: 1412 life: 992186 critical: False
-Turn2 ends.
-*******************************************************
-Turn:3 starts.
-Tune points: 55
-Red team:
-Centurion_330101        9152    100.00% 2       [Sturdiness_1t]
-Bkornblume_320105       8797    100.00% 1       [Sturdiness_1t]
-MedicinePocket_301090   9853    100.00% 4       [Sturdiness_1t]
-Blue team:
-Enemy1  992186  99.22%  0       []
-Cards:
-PryingEar_1     OutdoorSuperstar_1      AlchemyWare_1   VictoriousGeneral_1     InherentHabit_1 OutdoorSuperstar_1      PryingEar_1
-Action 1:exit
-Turn3 ends.
-*******************************************************
-```
+### Easy Extensibility for UX Modification, Battle Data Aggregation and Analysis
 
-### Sample battle stats
+The core battle logic of our simulator is built as a state machine, utilizing an event-driven mechanism. This design facilitates easy integration of data analytics, various console outputs, or even distinct user interfaces. To customize, simply implement your own [InfoProcessor](battle_info/info_processor.py) and integrate it as demonstrated in [main.py](main.py). This flexibility allows for seamless modifications and enhancements tailored to your specific needs.
 
-Currently the tool outputs a csv file for a turn-based battle stat.
+### Gymnasium-Compatible Gym
 
-```csv
-turn,color,character,move_count,damage,heal
-1,red,Centurion_330101,0,0,0
-1,red,Bkornblume_320105,1,1543,0
-1,red,MedicinePocket_301090,2,0,0
-1,blue,Enemy1,0,0,0
-2,red,Centurion_330101,2,4858,0
-2,red,Bkornblume_320105,1,1543,0
-2,red,MedicinePocket_301090,3,1412,0
-2,blue,Enemy1,0,0,0
-3,red,Centurion_330101,2,4858,0
-3,red,Bkornblume_320105,1,1543,0
-3,red,MedicinePocket_301090,3,1412,0
-3,blue,Enemy1,0,0,0
+In pursuit of my personal interest in learning, I have developed a simple model for Reinforcement Learning under the `rl` folder. The observation space currently includes Centurion, Bkornblume, and Medicine_pocket against a single dummy enemy, using basic Proximal Policy Optimization (PPO) for training.
 
-```
+After running a 1-hour training session, the results, as shown in [this figure](sb3_train_monitor/Figure_1.png), appear quite promising. 
+
+#### Control Group Performance:
+
+- `USE_0`: Always uses the first card
+- `USE_HIGH`: Always selects the card with the highest skill level
+- `HUMAN`: My own performance 😎
+
+| Player   | MAX    | MIN    | AVG      |
+|----------|--------|--------|----------|
+| USE_0    | 141146 | 107977 | 126637.44|
+| USE_HIGH | 155434 | 116804 | 137168.68|
+| HUMAN    | 164986 | 164986 | 164986.00|
+| PPO*     | 170030 | 101699 | 132044.86|
+
+*Note: For PPO, this data represents the last 50 rewards. The rewards calculation is based on damage minus penalty for incorrect inputs. The actual damage figures are higher than those shown in the table.
+
