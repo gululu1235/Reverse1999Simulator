@@ -1,10 +1,11 @@
 from characters.character import *
-from characters.skill import Skill, SkillType
+from characters.skill import Skill, SkillId, SkillType
 from status.buffs import Immune, Sturdiness
 from status.debuffs import Daze, DmgTakenUp
 from utils import first_or_default
 
 class MedicinePocket(Character):
+    id = CharacterId.MEDICINE_POCKET
     def __init__(self) -> None:
         super().__init__("MedicinePocket_301090");
         self.max_life = 9853
@@ -32,6 +33,7 @@ class MedicinePocket(Character):
             self.properties.healing_done_bonus += 0.1
 
 class InherentHabit(Skill):
+    id = SkillId.INHERENT_HABIT
     def __init__(self, caster) -> None:
         super().__init__(caster, "InherentHabit")
         self.target_number = 1
@@ -55,6 +57,7 @@ class InherentHabit(Skill):
             dmg_up.set_turn_count(1)
 
 class AlchemyWare(Skill):
+    id = SkillId.ALCHEMY_WARE
     def __init__(self, caster) -> None:
         super().__init__(caster, "AlchemyWare")
         self.target_number = 10
@@ -79,6 +82,7 @@ class AlchemyWare(Skill):
                 sturdiness.adjust_times_count(1)
 
 class TwentySixSecondaryReactions(Skill):
+    id = SkillId.TWENTY_SIX_SECONDARY_REACTIONS
     def __init__(self, caster) -> None:
         super().__init__(caster, "TwentySixSecondaryReactions")
         self.target_number = 1

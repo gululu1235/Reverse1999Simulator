@@ -1,10 +1,11 @@
 from characters.character import *
-from characters.skill import Skill
+from characters.skill import Skill, SkillId
 from status.debuffs import Weakness
 from dmg_type import DamageType
 from utils import first_or_default
 
 class Centurion(Character):
+    id = CharacterId.CENTURION
     def __init__(self) -> None:
         super().__init__("Centurion_330101");
         self.max_life = 9152
@@ -35,6 +36,7 @@ class Centurion(Character):
             self.life = min(self.life + heal, self.max_life)
 
 class OutdoorSuperstar(Skill):
+    id = SkillId.OUTDOOR_SUPERSTAR
     def __init__(self, caster) -> None:
         super().__init__(caster, "OutdoorSuperstar")
         self.target_number = 2
@@ -54,6 +56,7 @@ class OutdoorSuperstar(Skill):
             return 2.25
 
 class VictoriousGeneral(Skill):
+    id = SkillId.VICTORIOUS_GENERAL
     def __init__(self, caster) -> None:
         super().__init__(caster, "VictoriousGeneral")
         self.target_number = 1
@@ -67,6 +70,7 @@ class VictoriousGeneral(Skill):
             return 4.5 + self.caster.moxie * 0.35
 
 class RealityShowPremier(Skill):
+    id = SkillId.REALITY_SHOW_PREMIER
     def __init__(self, caster) -> None:
         super().__init__(caster, "RealityShowPremier")
         self.target_number = 10

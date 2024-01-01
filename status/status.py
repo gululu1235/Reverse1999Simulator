@@ -1,6 +1,15 @@
-from enum import Enum
-
+from enum import Enum, IntEnum
 from battle_info.battle_info_broker import InfoBroker
+
+class StatusId(IntEnum):
+    INVALID = 0
+    IMMUNE = 1
+    STURDINESS = 2
+    WEAKNESS = 3
+    DMG_TAKEN_UP = 4
+    REALITY_DEF_DOWN = 5
+    SEAL = 6
+    DAZE = 7
 
 class StatusType(Enum):
     NegStatus = 1
@@ -18,6 +27,7 @@ class Status:
         self.type = type
         self.times_count = times_count
         self.turn_count = turn_count
+        self.value = 0
 
     def __str__(self):
         info = self.name

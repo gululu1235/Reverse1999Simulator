@@ -1,12 +1,12 @@
 from battle_info.battle_info_broker import InfoBroker
 from battle_info.battle_stat_aggregator import BattleStatAggregator
 from battle_info.console_logger import ConsoleLogger
-from battlefield import BattleField, State
+from battle.battlefield import BattleField, State
 from characters.bkornblume import Bkornblume
 from characters.centurion import Centurion
 from characters.enemies import Enemy1
 from characters.medicine_pocket import MedicinePocket
-from tune import FirstTune
+from battle.tune import FirstTune
 
 
 battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstTune)

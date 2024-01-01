@@ -1,8 +1,9 @@
 import copy
 from characters.character import *
-from characters.skill import Skill
+from characters.skill import Skill, SkillId
 
 class DummyCharacter(Character):
+    id = CharacterId.DUMMY
     def __init__(self, name) -> None:
         super().__init__(name);
         self.attack = 100
@@ -31,6 +32,7 @@ class DummyCharacter(Character):
         self.properties = copy.copy(self.original_properties)
 
 class DummySkill(Skill):
+    id = SkillId.DUMMY
     def __init__(self, caster, name) -> None:
         super().__init__(caster, name)
         self.dealDamage = False

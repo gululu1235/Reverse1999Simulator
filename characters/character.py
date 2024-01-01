@@ -1,4 +1,5 @@
 import copy
+from enum import IntEnum
 from battle_info.battle_info_broker import InfoBroker
 from status.status import Status
 
@@ -108,3 +109,10 @@ class Properties:
         self.penetration_rate = 0
         self.healing_done_bonus = 0
         self.healing_taken_bonus = 0
+
+class CharacterId(IntEnum):
+    CENTURION = 1
+    BKORNBLUME = 2
+    MEDICINE_POCKET = 3
+    ENERMY = 99
+    DUMMY = 999

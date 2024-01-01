@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 battle_stat/
+.vscode/

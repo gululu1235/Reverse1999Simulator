@@ -1,11 +1,27 @@
-from enum import Enum
+from enum import Enum, IntEnum
 import random
 from battle_info.battle_info_broker import InfoBroker
 from characters.character import Character
-from calculation import calc_damage, calc_heal
+from battle.calculation import calc_damage, calc_heal
 from dmg_type import DamageType
 
+
+class SkillId(IntEnum):
+    INVALID = 0
+    OUTDOOR_SUPERSTAR = 1
+    VICTORIOUS_GENERAL = 2
+    REALITY_SHOW_PREMIER = 3
+    WATCH_HER_SLEEVES = 4
+    PRYING_EAR = 5
+    UNINVITED_REVIEWER = 6
+    INHERENT_HABIT = 7
+    ALCHEMY_WARE = 8
+    TWENTY_SIX_SECONDARY_REACTIONS = 9
+    DUMMY = 99
+
+
 class Skill:
+    id = SkillId.INVALID
     def __init__(self, caster, name) -> None:
         self.caster = caster
         self.is_ultimate = False

@@ -1,7 +1,8 @@
-from status.status import Status, StatusType
+from status.status import Status, StatusId, StatusType
 
 
 class Immune(Status):
+    id = StatusId.IMMUNE
     def __init__(self, caster, target, turn_count) -> None:
         super().__init__("Immune", caster, target, StatusType.PosStatus, turn_count = turn_count)
         self.list = []
@@ -10,6 +11,7 @@ class Immune(Status):
         self.adjust_turn_count(-1)
 
 class Sturdiness(Status):
+    id = StatusId.STURDINESS
     def __init__(self, caster, target, times_count) -> None:
         super().__init__("Sturdiness", caster, target, StatusType.PosStatus, times_count = times_count)
 

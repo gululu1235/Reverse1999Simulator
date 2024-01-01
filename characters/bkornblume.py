@@ -1,12 +1,12 @@
-from characters.character import Character
-from characters.skill import Skill, SkillType
-from dmg_type import DamageType
+from characters.character import Character, CharacterId
+from characters.skill import Skill, SkillId, SkillType
 from status.buffs import Immune
 from status.debuffs import DmgTakenUp, RealityDefDown, Seal
 from status.status import StatusType
 from utils import first_or_default
 
 class Bkornblume(Character):
+    id = CharacterId.BKORNBLUME
     def __init__(self) -> None:
         super().__init__("Bkornblume_320105");
         self.max_life = 8797
@@ -41,6 +41,7 @@ class Bkornblume(Character):
 negStatuses = {StatusType.NegStatus, StatusType.Control, StatusType.StatsDown}
 
 class WatchHerSleeves(Skill):
+    id = SkillId.WATCH_HER_SLEEVES
     def __init__(self, caster) -> None:
         super().__init__(caster, "WatchHerSleeves")
         self.target_number = 2
@@ -57,6 +58,7 @@ class WatchHerSleeves(Skill):
             return 4.35 if enhanced else 3.35
 
 class PryingEar(Skill):
+    id = SkillId.PRYING_EAR
     def __init__(self, caster) -> None:
         super().__init__(caster, "PryingEar")
         self.skillType = SkillType.DEBUFF
@@ -88,6 +90,7 @@ class PryingEar(Skill):
                 def_down.set_turn_count(2)
 
 class UninvitedReviewer(Skill):
+    id = SkillId.UNINVITED_REVIEWER
     def __init__(self, caster) -> None:
         super().__init__(caster, "UninvitedReviewer")
         self.target_number = 1

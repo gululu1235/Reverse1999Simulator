@@ -1,9 +1,8 @@
 import copy
 from characters.character import *
-from status.debuffs import Weakness
-from dmg_type import DamageType
 
 class Enemy1(Character):
+    id = CharacterId.ENERMY
     def __init__(self) -> None:
         super().__init__("Enemy1");
         self.attack = 1720
