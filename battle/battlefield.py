@@ -39,10 +39,14 @@ class BattleField:
 
         self.handle_input(input)
         if self.bad_input:
+            InfoBroker.bad_input()
             return self
 
-        if self.input_count == self.action_count:
+        if self.turn_cards:
             self.execute_cards(self.turn_cards)
+            self.turn_cards = []
+
+        if self.input_count == self.action_count:
             self.turn_end_events()
             self.turn_start_events()
 
@@ -72,8 +76,10 @@ class BattleField:
                     self.current_cards.pop(action[1] + 1)
                 if not picked.is_wildcard:
                     result = Card(picked.skill, 0)
+                InfoBroker.card_move(picked)
             elif action[0] == CardAction.Use:
                 result = self.current_cards.pop(action[1])
+                InfoBroker.card_use(result)
             return result
 
         user_inputs = input.split(' ')

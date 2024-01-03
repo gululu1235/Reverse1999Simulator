@@ -13,6 +13,10 @@ def reset_battlefield():
     battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstTune)
     return battle
 
+def damage_to_reward(old_dmg, new_dmg):
+    dmg = new_dmg - old_dmg
+    return dmg
+
 class BattleGym(gym.Env):
     metadata = {"render_modes": ["console"]}
 
@@ -25,21 +29,23 @@ class BattleGym(gym.Env):
         super().reset(seed=seed, options=options)
         self.battlefield = reset_battlefield()
         self.battlefield.start()
-        return battlefield_to_observation(self.battlefield), {}
+        return battlefield_to_observation(self.battlefield), {"dmg": 0}
     
     def step(self, action):
-        old_dmg = sum([enemy.life for enemy in self.battlefield.blue_team])
-
+        old_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team])
+        
         self.battlefield.step(action_map[action])
         terminated = self.battlefield.state == State.END
         truncated = False
+        new_dmg = 0
+
         if self.battlefield.bad_input:
             reward = -100
         else:
-            new_dmg = sum([enemy.life for enemy in self.battlefield.blue_team])
-            reward = old_dmg - new_dmg
+            new_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team])
+            reward = damage_to_reward(old_dmg, new_dmg)
         
-        info = {}
+        info = {"dmg": new_dmg}
 
         return (
             battlefield_to_observation(self.battlefield),

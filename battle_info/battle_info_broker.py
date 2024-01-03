@@ -68,5 +68,17 @@ class BattleInfoBroker:
     def status_set_turn_count(self, status, value):
         for processor in self.processors:
             processor.status_set_turn_count(status, value)
+    
+    def bad_input(self):
+        for processor in self.processors:
+            processor.bad_input()
+    
+    def card_move(self, card):
+        for processor in self.processors:
+            processor.card_move(card)
+    
+    def card_use(self, card):
+        for processor in self.processors:
+            processor.card_use(card)
 
 InfoBroker = BattleInfoBroker()

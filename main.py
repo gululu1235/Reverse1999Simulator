@@ -1,3 +1,4 @@
+from stable_baselines3 import PPO
 from battle_info.battle_info_broker import InfoBroker
 from battle_info.battle_stat_aggregator import BattleStatAggregator
 from battle_info.console_logger import ConsoleLogger
@@ -7,7 +8,10 @@ from characters.centurion import Centurion
 from characters.enemies import Enemy1
 from characters.medicine_pocket import MedicinePocket
 from battle.tune import FirstTune
+from rl.action_map import action_map
+from rl.battle_states import battlefield_to_observation
 
+model = PPO.load("battle_model")
 
 battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstTune)
 InfoBroker.register_processor(ConsoleLogger(battle))
@@ -21,7 +25,9 @@ def print_cards():
 
 while battle.state == State.RUNNING:
     print_cards()
-    user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.action_count)}:")
+    action, _states = model.predict(battlefield_to_observation(battle))
+    hint = action_map[int(action)]
+    user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.action_count)} (hint: {hint}):")
     #user_input = "u 0"
     battle.step(user_input)
 

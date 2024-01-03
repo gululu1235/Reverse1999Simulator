@@ -49,3 +49,12 @@ class InfoProcessor:
 
     def status_set_turn_count(self, status, value):
         pass
+
+    def bad_input(self):
+        pass
+
+    def card_move(self, card):
+        pass
+
+    def card_use(self, card):
+        pass

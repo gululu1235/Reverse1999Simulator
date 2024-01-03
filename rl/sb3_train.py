@@ -12,10 +12,10 @@ from rl.battle_gym import BattleGym
 def train_model(log_dir):
     # 创建环境
     env = BattleGym()
-    env = Monitor(env, log_dir)
+    env = Monitor(env, log_dir, info_keywords=("dmg",))
 
     # 创建模型
-    model = PPO("MlpPolicy", env, verbose=1)
+    model = PPO("MlpPolicy", env, verbose=1, learning_rate=0.002)
 
     # 训练模型
     model.learn(total_timesteps=1000000)

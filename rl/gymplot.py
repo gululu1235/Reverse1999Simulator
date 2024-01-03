@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 def moving_average(data, window_size):
     return [sum(data[i:i+window_size])/window_size for i in range(len(data)-window_size+1)]
 
-with open("tmp\monitor.csv", 'rt') as fh:
+with open("sb3_train_monitor\monitor.csv", 'rt') as fh:
     next(fh)  # 跳过标题行
     next(fh)  # 跳过列标题行
     data = fh.readlines()
 
 # 解析数据
-rewards = [float(line.split(',')[0]) for line in data]
+rewards = [float(line.split(',')[3]) for line in data]
 episodes = list(range(1, len(rewards) + 1))
 
 # 计算滚动平均奖励
