@@ -23,9 +23,9 @@ class FirstTune:
         self.points = min(99, self.points + 4)
     
     def refresh_cards(self):
-        if self.points < 25:
-            return False
-        self.points -= 25
+        # if self.points < 25:
+        #     return False
+        # self.points -= 25
 
         cards = self.team.card_server.get_initial_cards(self.team.position_count)
         for i in range(min(len(self.team.current_cards), len(cards))):

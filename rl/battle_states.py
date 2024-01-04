@@ -5,8 +5,7 @@ from battle.battlefield import BattleField
 def get_observation_space():
     sp = []
     # sp.append(31) # turn_count
-    sp.append(4) # input_count
-    sp.append(100) # tune_points
+    sp.append(2) # can refresh
     for i in range(8):
         sp.append(100) # skill_id
         sp.append(5) # level
@@ -26,9 +25,11 @@ def get_observation_space():
 def battlefield_to_observation(battlefield: BattleField):
     obs = []
     # obs.append(battlefield.turn)
-    obs.append(battlefield.input_count)
-    obs.append(battlefield.red_team.tune.points)
-    
+    if battlefield.input_count == 0 and battlefield.red_team.tune.points >= 25:
+        obs.append(1)
+    else:
+        obs.append(0)
+
     card_count = 0
     for card in battlefield.red_team.current_cards:
         obs.append(card.skill.id.value)
