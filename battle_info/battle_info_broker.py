@@ -80,5 +80,13 @@ class BattleInfoBroker:
     def card_use(self, card):
         for processor in self.processors:
             processor.card_use(card)
+    
+    def tune_refresh_cards(self):
+        for processor in self.processors:
+            processor.tune_refresh_cards()
+    
+    def tune_wild_card(self):
+        for processor in self.processors:
+            processor.tune_wild_card()
 
 InfoBroker = BattleInfoBroker()

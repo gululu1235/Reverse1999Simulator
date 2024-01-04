@@ -58,3 +58,9 @@ class InfoProcessor:
 
     def card_use(self, card):
         pass
+
+    def tune_refresh_cards(self):
+        pass
+
+    def tune_wild_card(self):
+        pass

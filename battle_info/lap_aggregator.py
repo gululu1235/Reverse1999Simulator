@@ -4,7 +4,7 @@ from battle_info.info_processor import InfoProcessor
 import matplotlib.pyplot as plt
 
 '''
-Aggregater the output information after each battle.
+Aggregate the output information after each battle.
 Information includes:
     - character's skill count
     - character's skill dmg
@@ -27,6 +27,8 @@ class LapAggregator(InfoProcessor):
         self.action_info[self.lap]["bad_input"] = 0
         self.action_info[self.lap]["card_move"] = 0
         self.action_info[self.lap]["card_use"] = 0
+        self.action_info[self.lap]["turn_refresh"] = 0
+        self.action_info[self.lap]["turn_wildcard"] = 0
         
     def card_move(self, card):
         self.action_info[self.lap]["card_move"] += 1
@@ -48,6 +50,12 @@ class LapAggregator(InfoProcessor):
     
     def bad_input(self):
         self.action_info[self.lap]["bad_input"] += 1
+    
+    def tune_refresh_cards(self):
+        self.action_info[self.lap]["turn_refresh"] += 1
+
+    def tune_wild_card(self):
+        self.action_info[self.lap]["turn_wildcard"] += 1
 
     def new_lap(self, battlefield):
         self.lap += 1
@@ -60,7 +68,7 @@ class LapAggregator(InfoProcessor):
             unique_skills.update(lap.keys())
         
         with open(self.filepath, "w") as f:
-            f.write("lap," + ",".join(unique_skills) + ",bad_input,card_move,card_use\n")
+            f.write("lap," + ",".join(unique_skills) + ",bad_input,card_move,card_use,refresh,wildcard\n")
         
         for lap in range(self.lap):
             with open(self.filepath, "a") as f:
@@ -72,5 +80,7 @@ class LapAggregator(InfoProcessor):
                         f.write("0,")
                 f.write(str(self.action_info[lap]["bad_input"]) + ",")
                 f.write(str(self.action_info[lap]["card_move"]) + ",")
-                f.write(str(self.action_info[lap]["card_use"]) + "\n")
+                f.write(str(self.action_info[lap]["card_use"]) + ",")
+                f.write(str(self.action_info[lap]["turn_refresh"]) + ",")
+                f.write(str(self.action_info[lap]["turn_wildcard"]) + "\n")
          

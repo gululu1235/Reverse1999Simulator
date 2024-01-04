@@ -1,4 +1,5 @@
 from battle.card import Card
+from battle_info.battle_info_broker import InfoBroker
 from characters.skill import Skill
 
 
@@ -30,6 +31,7 @@ class FirstTune:
         for i in range(min(len(self.battlefield.current_cards), len(cards))):
             if not self.battlefield.current_cards[i].skill.is_ultimate:
                 self.battlefield.current_cards[i].skill = cards[i].skill
+        InfoBroker.tune_refresh_cards();
         return True
 
     def add_wild_card(self):
@@ -40,4 +42,5 @@ class FirstTune:
         self.points -= self.c2_cost
         self.c2_cost = min(self.c2_cost + 10, 60)
         self.battlefield.current_cards.append(Card(Skill(None, "wildcard"), 1, True))
+        InfoBroker.tune_wild_card();
         return True
