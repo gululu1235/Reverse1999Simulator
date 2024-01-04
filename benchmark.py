@@ -25,7 +25,7 @@ for episode in range(total_episodes):
             break
     battle = env.battlefield
     total_rewards.append(episode_reward)
-    damages.append(sum(c.max_life - c.life for c in battle.blue_team))
+    damages.append(sum(c.max_life - c.life for c in battle.blue_team.members))
     
 
 average_reward = sum(total_rewards) / total_episodes

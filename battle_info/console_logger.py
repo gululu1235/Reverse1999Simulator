@@ -7,16 +7,16 @@ class ConsoleLogger(InfoProcessor):
 
     def turn_start(self):
         print('Turn:' + str(self.battlefield.turn) + ' starts.')
-        print('Tune points: ' + str(self.battlefield.tune.points))
+        print('Tune points: ' + str(self.battlefield.red_team.tune.points))
         print('Red team:')
-        for character in self.battlefield.red_team:
+        for character in self.battlefield.red_team.members:
             status_str = ", ".join(str(status) for status in character.status)
             status =  f"[{status_str}]"
             life_percentage = character.life / character.max_life * 100
             info = [character.name, str(character.life), f"{life_percentage:.2f}%", str(character.moxie), status]
             print("\t".join(info))
         print('Blue team:')
-        for character in self.battlefield.blue_team:
+        for character in self.battlefield.blue_team.members:
             status_str = ", ".join(str(status) for status in character.status)
             status =  f"[{status_str}]"
             life_percentage = character.life / character.max_life * 100

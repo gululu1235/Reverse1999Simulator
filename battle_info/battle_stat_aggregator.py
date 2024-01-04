@@ -13,8 +13,8 @@ class BattleStatAggregator(InfoProcessor):
         with open(self.filepath, "w") as f:
             f.write("turn,color,character,move_count,damage,heal\n")
         
-        self.__init_stat("red", self.battlefield.red_team)
-        self.__init_stat("blue", self.battlefield.blue_team)
+        self.__init_stat("red", self.battlefield.red_team.members)
+        self.__init_stat("blue", self.battlefield.blue_team.members)
 
     def __init_stat(self, color, characters):
         for character in characters:

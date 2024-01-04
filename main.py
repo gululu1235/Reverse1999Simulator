@@ -13,7 +13,8 @@ from rl.battle_states import battlefield_to_observation
 
 model = PPO.load("battle_model")
 
-battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstTune)
+battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()],FirstTune,
+                     5, 2, [Enemy1(), Enemy1()], FirstTune)
 InfoBroker.register_processor(ConsoleLogger(battle))
 InfoBroker.register_processor(BattleStatAggregator(battle, output_folder='battle_stat'))
 battle.start()
@@ -21,15 +22,20 @@ battle.start()
 
 def print_cards():
     print('Cards:')
-    print("\t".join(card.name() for card in battle.current_cards))
+    print("\t".join(card.name() for card in battle.red_team.current_cards))
 
 while battle.state == State.RUNNING:
+    if battle.caster_team == battle.blue_team:
+        battle.step("u 0 0")
+        continue
+
     print_cards()
     action, _states = model.predict(battlefield_to_observation(battle))
     hint = action_map[int(action)]
-    user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.action_count)} (hint: {hint}):")
-    #user_input = "u 0"
+    #hint = "n/a"
+    user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.red_team.action_count)} (hint: {hint}):")
+    #user_input = "u 0 0"
     battle.step(user_input)
 
-dmg_done = sum(c.max_life - c.life for c in battle.blue_team)
+dmg_done = sum(c.max_life - c.life for c in battle.blue_team.members)
 print(f"Battle ends in turn {battle.turn}. Total damage done: {dmg_done}")

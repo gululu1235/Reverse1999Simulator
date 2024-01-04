@@ -10,7 +10,8 @@ from rl.action_map import action_map
 from rl.battle_states import get_observation_space, battlefield_to_observation
 
 def reset_battlefield():
-    battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()], [Enemy1()], FirstTune)
+    battle = BattleField(7, 3, [Centurion(), Bkornblume(), MedicinePocket()],FirstTune,
+                     4, 1, [Enemy1()], FirstTune)
     return battle
 
 def damage_to_reward(old_dmg, new_dmg):
@@ -32,24 +33,29 @@ class BattleGym(gym.Env):
         return battlefield_to_observation(self.battlefield), {"dmg": 0}
     
     def step(self, action):
-        old_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team])
-        
+        old_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team.members])
+
         self.battlefield.step(action_map[action])
+        
         terminated = self.battlefield.state == State.END
+        while not terminated and self.battlefield.caster_team == self.battlefield.blue_team:
+            self.battlefield.step("u 0 0")
+            terminated = self.battlefield.state == State.END
+
         truncated = False
         new_dmg = 0
 
         if self.battlefield.bad_input:
-            reward = -100
+            reward = -200
         else:
-            new_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team])
+            new_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team.members])
             reward = damage_to_reward(old_dmg, new_dmg)
         
         info = {"dmg": new_dmg}
 
         return (
             battlefield_to_observation(self.battlefield),
-            reward,
+            reward - 1600,
             terminated,
             truncated,
             info,
@@ -60,26 +66,22 @@ class BattleGym(gym.Env):
             return
 
         print('Turn:' + str(self.battlefield.turn))
-        print('Action count: ' + str(self.battlefield.action_count))
-        print('Tune points: ' + str(self.battlefield.tune.points))
-        print('Red team:')
-        for character in self.battlefield.red_team:
-            status_str = ", ".join(str(status) for status in character.status)
-            status =  f"[{status_str}]"
-            life_percentage = character.life / character.max_life * 100
-            info = [character.name, str(character.life), f"{life_percentage:.2f}%", str(character.moxie), status]
-            print("\t".join(info))
-        print('Blue team:')
-        for character in self.battlefield.blue_team:
-            status_str = ", ".join(str(status) for status in character.status)
-            status =  f"[{status_str}]"
-            life_percentage = character.life / character.max_life * 100
-            info = [character.name, str(character.life), f"{life_percentage:.2f}%", str(character.moxie), status]
-            print("\t".join(info))
+        print('Action count: ' + str(self.battlefield.input_count))
+        print('Flag: ' + str(self.battlefield.caster_team == self.battlefield.red_team))
+        print('Cards:')
+        print("\t".join(card.name() for card in self.battlefield.red_team.current_cards))
             
     def close(self):
         pass
 
 # from stable_baselines3.common.env_checker import check_env
 # env = BattleGym()
+# obs, info = env.reset()
+# for i in range(20):
+#     env.render()
+#     print(obs)
+#     obs, r, _, _, dmg = env.step(int(input()))
+#     print(r)
+    
+
 # check_env(env, warn = True)

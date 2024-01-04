@@ -17,6 +17,9 @@ class SkillId(IntEnum):
     INHERENT_HABIT = 7
     ALCHEMY_WARE = 8
     TWENTY_SIX_SECONDARY_REACTIONS = 9
+    ENEMY_SKILL_1 = 96
+    ENEMY_SKILL_2 = 97
+    ENEMY_ULTI = 98
     DUMMY = 99
 
 

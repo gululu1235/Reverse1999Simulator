@@ -17,7 +17,6 @@ class Centurion(Character):
         self.original_properties.critical_rate = 0.675
         self.original_properties.critical_resist = 0.1
         self.original_properties.critical_dmg = 1.801
-        self.original_properties.critical_def =0
         self.original_properties.dmg_bonus = 0.08
         self.original_properties.dmg_taken_reduction = 0.05
         self.original_properties.incantation_might = 0.18
