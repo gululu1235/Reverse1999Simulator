@@ -46,7 +46,7 @@ class BattleGym(gym.Env):
         new_dmg = 0
 
         if self.battlefield.bad_input:
-            reward = -200
+            reward = -50
         else:
             new_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team.members])
             reward = damage_to_reward(old_dmg, new_dmg)
@@ -55,7 +55,7 @@ class BattleGym(gym.Env):
 
         return (
             battlefield_to_observation(self.battlefield),
-            reward - 1600,
+            reward,
             terminated,
             truncated,
             info,

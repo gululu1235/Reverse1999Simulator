@@ -18,10 +18,10 @@ def train_model(log_dir):
     env = Monitor(env, log_dir, info_keywords=("dmg",))
 
     # 创建模型
-    model = PPO("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, learning_rate = 0.005, gamma=0.8)
+    model = PPO("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, gamma=0)
 
     # 训练模型
-    model.learn(total_timesteps=100000)
+    model.learn(total_timesteps=2000000)
 
     # 保存模型
     model.save("battle_model")
