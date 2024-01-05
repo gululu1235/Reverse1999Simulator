@@ -16,7 +16,7 @@ def reset_battlefield():
 
 def damage_to_reward(old_dmg, new_dmg):
     dmg = new_dmg - old_dmg
-    return dmg
+    return dmg / 1000 - 0.1
 
 class BattleGym(gym.Env):
     metadata = {"render_modes": ["console"]}
@@ -46,7 +46,7 @@ class BattleGym(gym.Env):
         new_dmg = 0
 
         if self.battlefield.bad_input:
-            reward = -50
+            reward = -0.2
         else:
             new_dmg = sum([enemy.max_life - enemy.life for enemy in self.battlefield.blue_team.members])
             reward = damage_to_reward(old_dmg, new_dmg)
