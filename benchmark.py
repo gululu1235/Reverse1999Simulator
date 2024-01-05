@@ -33,6 +33,8 @@ average_damage = sum(damages) / total_episodes
 
 print("Average Reward:", average_reward)
 print("Average Damage:", average_damage)
+print("Min damage:", min(damages))
+print("Max damage:", max(damages))
 aggregator.summary()
 
 episodes = list(range(1, len(damages) + 1))
