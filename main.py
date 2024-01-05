@@ -10,6 +10,7 @@ from characters.medicine_pocket import MedicinePocket
 from battle.tune import FirstTune
 from rl.action_map import action_map
 from rl.battle_states import battlefield_to_observation
+import torch as th
 
 model = PPO.load("battle_model")
 
@@ -30,10 +31,15 @@ while battle.state == State.RUNNING:
         continue
 
     print_cards()
-    action, _states = model.predict(battlefield_to_observation(battle))
+    obs = battlefield_to_observation(battle)
+    action, _states = model.predict(obs)
+    
     hint = action_map[int(action)]
     #hint = "n/a"
-    user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.red_team.action_count)} (hint: {hint}):")
+    vobs = obs.reshape(1, -1)
+    with th.no_grad():  # 禁用梯度计算
+        _, value, _ = model.policy.forward(th.from_numpy(vobs).float())
+    user_input = input(f"Action {str(battle.input_count + 1)}/{str(battle.red_team.action_count)} (hint: {hint}, value: {value.item()}):")
     #user_input = "u 0 0"
     battle.step(user_input)
 

@@ -25,10 +25,10 @@ class Team:
 
 class BattleField:
     def __init__(self, red_position_count, red_action_count, red_team, red_tune_type,
-                 blue_position_count, blue_action_count, blue_team, blue_tuen_type, max_turn=15) -> None:
+                 blue_position_count, blue_action_count, blue_team, blue_tune_type, max_turn=15) -> None:
         
         self.red_team = Team(red_position_count, red_action_count, red_team, red_tune_type)
-        self.blue_team = Team(blue_position_count, blue_action_count, blue_team, blue_tuen_type)
+        self.blue_team = Team(blue_position_count, blue_action_count, blue_team, blue_tune_type)
         self.max_turn = max_turn
 
         self.turn = 0

@@ -1,3 +1,4 @@
+from collections import Counter
 import random
 import copy
 
@@ -60,3 +61,6 @@ class CardServer:
                 self.ultimate_cards.remove(ultimate_card)
                 return True
         return False
+
+    def get_cards_list(self):
+        return Counter(card.skill.id.value for card in self.cards)

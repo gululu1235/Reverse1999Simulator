@@ -9,6 +9,7 @@ def get_observation_space():
     for i in range(8):
         sp.append(100) # skill_id
         sp.append(5) # level
+        sp.append(50) # cards_left
         # sp.append(2) # is_wildcard
     for i in range(3): # red_team
         sp.append(6) # moxie
@@ -31,13 +32,16 @@ def battlefield_to_observation(battlefield: BattleField):
         obs.append(0)
 
     card_count = 0
+    cards_left = battlefield.red_team.card_server.get_cards_list()
     for card in battlefield.red_team.current_cards:
         obs.append(card.skill.id.value)
         obs.append(card.level)
+        obs.append(cards_left[card.skill.id.value])
         # obs.append(1 if card.is_wildcard else 0)
         card_count += 1
 
     while card_count < 8:
+        obs.append(0)
         obs.append(0)
         obs.append(0)
         # obs.append(0)
