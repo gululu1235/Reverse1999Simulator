@@ -162,4 +162,4 @@ cython_debug/
 battle_stat/
 .vscode/
 sb3_train_monitor/
-battle_model.zip
+.zip

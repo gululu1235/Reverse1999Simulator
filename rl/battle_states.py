@@ -4,13 +4,15 @@ from battle.battlefield import BattleField
 
 def get_observation_space():
     sp = []
-    # sp.append(31) # turn_count
+    sp.append(31) # turn_count
+    # sp.append(4) # input_count
+    # sp.append(100) # tune_points
     sp.append(2) # can refresh
     for i in range(8):
         sp.append(100) # skill_id
         sp.append(5) # level
         sp.append(50) # cards_left
-        # sp.append(2) # is_wildcard
+        sp.append(2) # is_wildcard
     for i in range(3): # red_team
         sp.append(6) # moxie
     #     for j in range(5): # status
@@ -25,11 +27,10 @@ def get_observation_space():
 
 def battlefield_to_observation(battlefield: BattleField):
     obs = []
-    # obs.append(battlefield.turn)
-    if battlefield.input_count == 0 and battlefield.red_team.tune.points >= 25:
-        obs.append(1)
-    else:
-        obs.append(0)
+    obs.append(18 - battlefield.turn)
+    # obs.append(battlefield.input_count)
+    # obs.append(battlefield.red_team.tune.points)
+    obs.append(1 if battlefield.input_count == 0 and battlefield.red_team.tune.points > 25 else 0)
 
     card_count = 0
     cards_left = battlefield.red_team.card_server.get_cards_list()
@@ -37,14 +38,14 @@ def battlefield_to_observation(battlefield: BattleField):
         obs.append(card.skill.id.value)
         obs.append(card.level)
         obs.append(cards_left[card.skill.id.value])
-        # obs.append(1 if card.is_wildcard else 0)
+        obs.append(1 if card.is_wildcard else 0)
         card_count += 1
 
     while card_count < 8:
         obs.append(0)
         obs.append(0)
         obs.append(0)
-        # obs.append(0)
+        obs.append(0)
         card_count += 1
     
     for character in battlefield.red_team.members:

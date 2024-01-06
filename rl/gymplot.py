@@ -18,6 +18,9 @@ window_size = 50  # 你可以根据需要调整窗口大小
 avg_rewards = moving_average(rewards, window_size)
 avg_dmgs = moving_average(dmgs, window_size)
 
+print("Last average reward: ", avg_rewards[-1])
+print("Last average damage: ", avg_dmgs[-1])
+
 # 绘制奖励图表
 plt.plot(episodes, rewards, label='Rewards')
 plt.plot(episodes, dmgs, label='Damages')

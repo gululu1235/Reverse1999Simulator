@@ -21,7 +21,10 @@ def train_model(log_dir):
     model = PPO("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=1, gamma=0.9)
 
     # 训练模型
-    model.learn(total_timesteps=800000)
+    try:
+        model.learn(total_timesteps=800000)
+    except KeyboardInterrupt:
+        print("Saving model before exiting...")
 
     # 保存模型
     model.save("battle_model")
